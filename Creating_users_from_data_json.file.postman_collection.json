@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "a5c491aa-f31e-4174-a5ba-16cc163e3885",
+		"name": "Creating users from data json.file",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21095713"
+	},
+	"item": [
+		{
+			"name": "1. Register user in system Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"console.log (pm.iterationData.get(\"name\"));\r",
+							"console.log (pm.iterationData.get(\"lastName\"));\r",
+							"console.log (pm.iterationData.get(\"email\"));\r",
+							"console.log (pm.iterationData.get(\"password\"));\r",
+							"console.log (pm.iterationData.get(\"repeatPassword\"));\r",
+							"\r",
+							"//Tests if user was created correctly\r",
+							"if(jsonData.status == \"ok\"){\r",
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+							"});\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"pm.test(\"Data include test\", function () {\r",
+							"   pm.expect(jsonData.data).to.deep.include({\r",
+							"        \"distanceUnits\": \"km\",\r",
+							"        \"currency\": \"usd\"\r",
+							"    })\r",
+							"});\r",
+							"pm.test(\"Data keys test\", function () {\r",
+							"   pm.expect(jsonData.data).to.have.keys(\"userId\",\"distanceUnits\",\"currency\")\r",
+							"});\r",
+							"pm.test(\"Status is ok\", function () {\r",
+							"        pm.expect(jsonData.status).to.eql(\"ok\");\r",
+							"});\r",
+							"pm.test(\"Distanceunits is km\", function () {\r",
+							"        pm.expect(jsonData.data.distanceUnits).to.eql(\"km\");\r",
+							"});\r",
+							"pm.test(\"Currency is usd\", function () {\r",
+							"        pm.expect(jsonData.data.currency).to.eql(\"usd\");\r",
+							"});\r",
+							"pm.test(\"UserId is number\", function () {\r",
+							"        pm.expect(jsonData.data.userId).to.be.a(\"number\");\r",
+							"});\r",
+							"}\r",
+							"else{console.log(\"User was not created\")};\r",
+							"\r",
+							"//Variables for the next requests\r",
+							"if(jsonData.status == \"ok\"){\r",
+							"pm.environment.set(\"UserId\", jsonData.data.userId);\r",
+							"};\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \"name\": \"{{name}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"repeatPassword\": \"{{repeatPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{mainUrl}}auth/signup",
+					"host": [
+						"{{mainUrl}}auth"
+					],
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Delete user`s account Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"if(jsonData.status == \"ok\"){\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body is correct\", function () {\r",
+							"    pm.response.to.have.body({\"status\":\"ok\"});\r",
+							"});\r",
+							"pm.test(\"Status is OK\", function () {\r",
+							"        pm.expect(jsonData.status).to.eql(\"ok\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{mainUrl}}users",
+					"host": [
+						"{{mainUrl}}users"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
